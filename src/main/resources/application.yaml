@@ -1,0 +1,13 @@
+spring:
+  flyway:
+    user: "voodookiidoo"
+    baseline-on-migrate: true
+  application:
+    name: task
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://localhost:5432/transport_db"
+    username: "voodookiidoo"
+logging:
+  pattern:
+    console: "%clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(---){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"

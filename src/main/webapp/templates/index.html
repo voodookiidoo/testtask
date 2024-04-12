@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ItemList</title>
+    <style th:inline="css">
+        .table {
+            border: 1px solid #eee;
+            table-layout: fixed;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .table input {
+            border: 2px solid aquamarine;
+            width: 100%;
+            padding: 1px;
+        }
+
+        .table th {
+            font-weight: bold;
+            padding: 5px;
+            background: #efefef;
+            border: 1px solid #dddddd;
+        }
+
+        .table td {
+            padding: 5px 10px;
+            border: 1px solid #eee;
+            text-align: left;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: #F7F7F7;
+        }
+
+        .table tbody tr:last-child {
+            background: aquamarine;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <!--/*@thymesVar id="chain" type="ru.task.transport.dto.IndexFilteredRequestDTO"*/-->
+    <form th:object="${chain}" th:method="GET" th:action="@{/transport/indexdsads}">
+        <!--/*@thymesVar id="t" type="ru.task.transport.dto.IndexResponseDTO"*/-->
+        <table class="table">
+            <tr>
+                <th>Transport id</th>
+                <th>Model name</th>
+                <th>brand name</th>
+                <th>Governmental number</th>
+                <th>Transport type</th>
+                <th>Transport category</th>
+                <th>Release year</th>
+                <th>Trailer status</th>
+            </tr>
+            <tr th:each=" t : ${transport_list}">
+                <td>
+                    <a th:text="${t.getId()}"
+                       th:href="@{/transport/{id}(id=${t.getId()})}"
+                       th:method="GET"/>
+                </td>
+                <td>
+                    <div th:text="${t.getName()}"/>
+                </td>
+                <td>
+                    <div th:text="${t.getBrand()}"/>
+                </td>
+                <td>
+                    <div th:text="${t.getGovNumber()}"></div>
+                </td>
+                <td>
+                    <div th:text="${t.getTransportType()}"/>
+                </td>
+                <td>
+                    <div th:text="${t.getCategory()}"/>
+                </td>
+                <td>
+                    <div th:text="${t.getYear().toString()}"/>
+                </td>
+                <td>
+                    <div th:text="${t.getHasTrailer()}? 'present':'abcent'"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div th:text="Filters"/>
+                </td>
+                <td>
+                    <input type="text" th:field="*{name}">
+                </td>
+                <td>
+                    <input type="text" th:field="*{brand}">
+                </td>
+                <td>
+                    <input type="text" th:field="*{govNumber}">
+                </td>
+                <td>
+                    <input type="text" th:field="*{transportType}">
+                </td>
+                <td>
+                    <input type="text" th:field="*{category}">
+                </td>
+                <td>
+                    <input type="number" th:field="*{year}">
+                </td>
+                <td>
+                    <input type="submit" name="create">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

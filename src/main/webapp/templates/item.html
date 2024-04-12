@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>$Title$</title>
+</head>
+<body>
+
+<!--/*@thymesVar id="transport" type="ru.task.transport.dto.CreationRequestDTO"*/-->
+<form th:method="POST" th:action="@{/transport/new}" th:object="${transport}">
+    <label th:for="name">Enter name: </label>
+    <input type="text" th:field="*{name}">
+    <label th:for="brand">Enter brand: </label>
+    <input type="text" th:field="*{brand}" >
+    <label th:for="gov_num">Enter goverment number: </label>
+    <input type="text" th:field="*{govNumber}">
+    <label th:for="type">Enter transport type: </label>
+    <input type="text" th:field="*{transportType}" >
+    <label th:for="trailer">Has trailer</label>
+    <input type="checkbox" th:field="*{hasTrailer}">
+    <label th:for="year">year of release</label>
+    <input type="number" th:field="*{year}">
+    <label th:for="category">year of release</label>
+    <input type="text" th:field="*{category}">
+    <br/>
+    <input type="submit" name="create" value="Create">
+</form>
+</body>
+</html>
