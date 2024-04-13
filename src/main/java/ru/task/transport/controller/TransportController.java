@@ -2,17 +2,15 @@ package ru.task.transport.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.task.transport.config.Constants;
 import ru.task.transport.dto.CreationRequestDTO;
@@ -32,48 +30,49 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TransportController {
 
-
-    private final DefaultRepositoryTagsProvider repositoryTagsProvider;
+    private final LocalValidatorFactoryBean validator;
 
     TransportService transportService;
 
-    @PostMapping("/new")
-    public String createHandler(@ModelAttribute CreationRequestDTO transport,
-                                @ModelAttribute("chain") IndexFilteredRequestDTO chain) {
-
-        TransportEntity entity = TransportMapper.INSTANCE.mapTo(transport);
-        transportService.saveEntity(entity);
-        return "redirect:/transport/index";
+    public String redirectTo(String to) {
+        return "redirect:%s/%s".formatted(Constants.TRANSPORT_URL, to);
     }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHandler(@PathVariable Integer id) {
-        boolean deleted = transportService.deleteById(id);
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/new")
+    public String createHandler(@ModelAttribute("transport") @Validated CreationRequestDTO transport,
+                                BindingResult result,
+                                @ModelAttribute("chain") IndexFilteredRequestDTO chain) {
+        if (result.hasErrors() || !validator.validate(transport).isEmpty()) {
+            return redirectTo("index");
         }
-        return ResponseEntity.noContent().build();
+        TransportEntity entity = TransportMapper.INSTANCE.creationReqToEntity(transport);
+        transportService.saveEntity(entity);
+        return redirectTo("index");
     }
 
 
     @GetMapping("/{id}")
-    public String searchHandler(@PathVariable Integer id, @ModelAttribute UpdateRequestDTO dto, BindingResult result, Model model) {
+    public String searchHandler(@PathVariable Integer id,
+                                Model model) {
         Optional<TransportEntity> item = transportService.findById(id);
         if (item.isEmpty()) {
-            return "redirect:/transport/index";
+            return redirectTo("index");
         }
-        model.addAttribute("item", item.get());
+
+        UpdateRequestDTO dto = TransportMapper.INSTANCE.entityToUpdateReq(item.get());
+        model.addAttribute("item", dto);
         return "editform";
     }
 
     @GetMapping("/create")
-    public String creationFormHandler(@ModelAttribute("transport") CreationRequestDTO transport) {
-        return "item";
+    public String creationFormHandler(@ModelAttribute("item") CreationRequestDTO dto) {
+        return "creationform";
     }
 
     @GetMapping("/index")
-    public String indexHandler(@ModelAttribute("chain") IndexFilteredRequestDTO chain, BindingResult result, Model model) {
+    public String indexHandler(@ModelAttribute("chain") IndexFilteredRequestDTO chain,
+                               BindingResult result, Model model) {
+        log.info("Index called");
         List<IndexResponseDTO> list;
         if (!result.hasErrors()) {
             list = transportService.indexFiltered(chain);
@@ -84,10 +83,19 @@ public class TransportController {
         return "index";
     }
 
-    @PostMapping("/update")
-    public String updateHandler(@RequestBody UpdateRequestDTO dto) {
-        transportService.updateEntity(dto);
-        return "redirect:/transport/index";
+    @PostMapping(value = "/update")
+    public String updateHandler(
+            @ModelAttribute("item") @Validated UpdateRequestDTO item,
+            BindingResult result) {
+        if (result.hasErrors() || !validator.validate(item).isEmpty()) {
+            log.info("Something bad happened");
+            log.info("Errors:%s".formatted(result));
+            return redirectTo("index");
+        }
+        log.info(result.toString());
+        log.info(item.toString());
+        transportService.updateEntity(item.getId(), item);
+        return redirectTo("index");
     }
 
 

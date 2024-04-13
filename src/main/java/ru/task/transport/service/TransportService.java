@@ -20,6 +20,6 @@ public interface TransportService {
 
     List<IndexResponseDTO> indexFiltered(IndexFilteredRequestDTO chain);
 
-    void updateEntity(UpdateRequestDTO dto);
+    void updateEntity(Integer id, UpdateRequestDTO dto);
 
 }

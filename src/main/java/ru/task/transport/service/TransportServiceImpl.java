@@ -2,7 +2,6 @@ package ru.task.transport.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.stereotype.Service;
 import ru.task.transport.dto.IndexFilteredRequestDTO;
 import ru.task.transport.dto.IndexResponseDTO;
@@ -26,8 +25,6 @@ public class TransportServiceImpl implements TransportService {
 
     private final TransportRepository transportRepository;
 
-    private final DefaultRepositoryTagsProvider repositoryTagsProvider;
-
 
     @Override
     public List<IndexResponseDTO> index() {
@@ -36,6 +33,7 @@ public class TransportServiceImpl implements TransportService {
 
     @Override
     public Optional<TransportEntity> findById(int id) {
+
         return transportRepository.findById(id);
     }
 
@@ -76,8 +74,8 @@ public class TransportServiceImpl implements TransportService {
     }
 
     @Override
-    public void updateEntity(UpdateRequestDTO dto) {
-        Optional<TransportEntity> entityOptional = findById(dto.getId());
+    public void updateEntity(Integer id, UpdateRequestDTO dto) {
+        Optional<TransportEntity> entityOptional = findById(id);
         if (entityOptional.isEmpty()) return;
         TransportEntity entity = entityOptional.get();
         TransportMapper.INSTANCE.merge(entity, dto);

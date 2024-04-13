@@ -6,8 +6,7 @@
 </head>
 <body>
 
-<!--/*@thymesVar id="transport" type="ru.task.transport.dto.CreationRequestDTO"*/-->
-<form th:method="POST" th:action="@{/transport/new}" th:object="${transport}">
+<form method="post" th:action="@{/transport/new}" th:object="${transport}">
     <label th:for="name">Enter name: </label>
     <input type="text" th:field="*{name}">
     <label th:for="brand">Enter brand: </label>

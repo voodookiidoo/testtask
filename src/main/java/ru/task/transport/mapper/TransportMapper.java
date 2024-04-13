@@ -23,10 +23,14 @@ public interface TransportMapper {
 
     TransportMapper INSTANCE = Mappers.getMapper(TransportMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     void merge(@MappingTarget TransportEntity entity, UpdateRequestDTO dto);
 
+    @Mapping(target = "id")
+    UpdateRequestDTO entityToUpdateReq(TransportEntity entity);
+
     @Mapping(target = "id", ignore = true)
-    TransportEntity mapTo(CreationRequestDTO dto);
+    TransportEntity creationReqToEntity(CreationRequestDTO dto);
 
     IndexResponseDTO indexMap(TransportEntity entity);
 
